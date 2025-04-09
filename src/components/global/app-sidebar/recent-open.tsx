@@ -32,7 +32,7 @@ export function RecentOpen({ recentProjects }: { recentProjects: Project[] }) {
     router.push(`/presentation/${projectId}`);
   };
 
-  return (
+  return recentProjects.length > 0 ? (
     <SidebarGroup className="p-0 group-data-[collapsible=icon]:hidden">
       <SidebarGroupLabel>Recently Opened</SidebarGroupLabel>
       <SidebarMenu>
@@ -59,5 +59,7 @@ export function RecentOpen({ recentProjects }: { recentProjects: Project[] }) {
         )}
       </SidebarMenu>
     </SidebarGroup>
-  );
+  ) : (
+    ''
+  )
 }

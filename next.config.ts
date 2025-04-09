@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
 
   images: {
     dangerouslyAllowSVG: true,
+    domains: ['kokonutui.com'],
     remotePatterns: [
       {
         protocol: "https",
