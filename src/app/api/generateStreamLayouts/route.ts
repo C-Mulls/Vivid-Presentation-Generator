@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { client } from "@/lib/prisma"; // Adjust the path to your Prisma client
-import { OpenAIStream, StreamingTextResponse } from "ai"; // Your helper for streaming responses
+import {  StreamingTextResponse } from "ai"; // Your helper for streaming responses
+// import { OpenAIStream, StreamingTextResponse } from "ai"; // Your helper for streaming responses
 import { openai } from "@/lib/openai";
 import { ContentType } from "@/lib/types";
 import { v4 as uuidv4 } from "uuid";
@@ -99,16 +100,25 @@ export async function POST(request: Request) {
       stream: true,
     });
 
+    const stream = new ReadableStream({
+      async start(controller) {
+        for await (const chunk of response) {
+         const text = chunk.choices[0]?.delta?.content || "";
+         controller.enqueue(new TextEncoder().encode(text));
+        }
+        controller.close();
+      },
+    })
     console.log("🟢 OpenAI API response:", response);
 
     // Create a streaming response that pipes the OpenAI API output.
-    const stream = OpenAIStream(response, {
+    // const stream = OpenAIStream(response, {
 
-      async onCompletion(completion) {
-        console.log("🟢 Streaming layouts generation completion:", completion);
-        // On stream completion, parse and save the generated slides to the database.
-      },
-    });
+    //   async onCompletion(completion) {
+    //     console.log("🟢 Streaming layouts generation completion:", completion);
+    //     // On stream completion, parse and save the generated slides to the database.
+    //   },
+    // });
 
     console.log("🟢 Streaming layouts generation started", stream);
     return new StreamingTextResponse(stream);
